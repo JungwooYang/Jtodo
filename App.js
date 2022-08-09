@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  ScrollView,
 } from "react-native";
 
 export default function App() {
@@ -20,15 +21,16 @@ export default function App() {
     if (text === "") {
       return;
     }
-    const newTodos = Object.assign({}, todos, {
+    const newTodos = {
+      ...todos,
       [Date.now()]: { text, work: working },
-    });
+    };
     setTodos(newTodos);
     setText("");
-    console.log(newTodos);
   };
   return (
     <View style={styles.container}>
+      <StatusBar style="auto" />
       <View style={styles.header}>
         <TouchableOpacity>
           <Text
@@ -65,8 +67,14 @@ export default function App() {
           placeholderTextColor={theme.deepgray}
           style={styles.input}
         />
+        <ScrollView>
+          {Object.keys(todos).map((key) => (
+            <View style={styles.todo} key={key}>
+              <Text style={styles.todoText}>{todos[key].text}</Text>
+            </View>
+          ))}
+        </ScrollView>
       </View>
-      <StatusBar style="auto" />
     </View>
   );
 }
@@ -78,10 +86,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   header: {
-    flex: 1,
+    flex: 1.2,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 20,
     // backgroundColor: "gold",
   },
   btnText: {
@@ -94,10 +103,20 @@ const styles = StyleSheet.create({
   },
   input: {
     paddingVertical: 10,
-    paddingHorizontal: 3,
-    fontSize: 20,
+    paddingHorizontal: 5,
+    fontSize: 16,
     borderBottomColor: "white",
-    borderBottomWidth: 3,
+    borderBottomWidth: 2,
     color: "white",
+    marginBottom: 30,
+    fontWeight: "600",
   },
+  todo: {
+    backgroundColor: theme.lightgray,
+    marginTop: 15,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+  },
+  todoText: { color: "white", fontSize: 16, fontWeight: "400" },
 });
