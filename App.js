@@ -7,9 +7,11 @@ import {
   TouchableOpacity,
   View,
   ScrollView,
+  Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { theme } from "./colors";
+import { Fontisto } from "@expo/vector-icons";
 
 const STORAGE_KEY = "@todos";
 
@@ -20,7 +22,7 @@ export default function App() {
   useEffect(() => {
     loadTodos();
   }, []);
-  const travel = () => setWorking(false);
+  const play = () => setWorking(false);
   const work = () => setWorking(true);
   const onChangeText = (payload) => setText(payload);
   const saveTodos = async (toSave) => {
@@ -53,6 +55,21 @@ export default function App() {
     saveTodos(newTodos);
     setText("");
   };
+  const deleteTodo = (key) => {
+    Alert.alert("Delete Todo", "Are you sure?", [
+      { text: "Cancel" },
+      {
+        text: "Confirm",
+        style: "destructive",
+        onPress: () => {
+          const newTodos = { ...todos };
+          delete newTodos[key];
+          setTodos(newTodos);
+          saveTodos(newTodos);
+        },
+      },
+    ]);
+  };
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
@@ -62,7 +79,7 @@ export default function App() {
             onPress={work}
             style={{
               ...styles.btnText,
-              color: working ? "white" : theme.lightgray,
+              color: working ? "white" : theme.gray4,
             }}
           >
             Work
@@ -70,13 +87,13 @@ export default function App() {
         </TouchableOpacity>
         <TouchableOpacity>
           <Text
-            onPress={travel}
+            onPress={play}
             style={{
               ...styles.btnText,
-              color: !working ? "white" : theme.lightgray,
+              color: !working ? "white" : theme.gray4,
             }}
           >
-            Travel
+            Play
           </Text>
         </TouchableOpacity>
       </View>
@@ -89,7 +106,7 @@ export default function App() {
           placeholder={
             working ? "what do you have to do?" : "what do you want to do?"
           }
-          placeholderTextColor={theme.deepgray}
+          placeholderTextColor={theme.gray3}
           style={styles.input}
         />
         <ScrollView>
@@ -97,6 +114,9 @@ export default function App() {
             todos[key].working === working ? (
               <View style={styles.todo} key={key}>
                 <Text style={styles.todoText}>{todos[key].text}</Text>
+                <TouchableOpacity onPress={() => deleteTodo(key)}>
+                  <Fontisto name="check" size={16} color={theme.gray3} />
+                </TouchableOpacity>
               </View>
             ) : null
           )}
@@ -139,10 +159,13 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   todo: {
-    backgroundColor: theme.lightgray,
+    backgroundColor: theme.gray5,
     marginTop: 15,
     paddingVertical: 12,
     paddingHorizontal: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     borderRadius: 10,
   },
   todoText: { color: "white", fontSize: 16, fontWeight: "400" },
