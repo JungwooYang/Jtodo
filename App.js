@@ -8,6 +8,7 @@ import {
   View,
   ScrollView,
   Alert,
+  Platform,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { theme } from "./colors";
@@ -56,19 +57,29 @@ export default function App() {
     setText("");
   };
   const deleteTodo = (key) => {
-    Alert.alert("Delete Todo", "Are you sure?", [
-      { text: "Cancel" },
-      {
-        text: "Confirm",
-        style: "destructive",
-        onPress: () => {
-          const newTodos = { ...todos };
-          delete newTodos[key];
-          setTodos(newTodos);
-          saveTodos(newTodos);
+    if (Platform.OS === "web") {
+      const ok = confirm("Are you sure to delete this?");
+      if (ok) {
+        const newTodos = { ...todos };
+        delete newTodos[key];
+        setTodos(newTodos);
+        saveTodos(newTodos);
+      }
+    } else {
+      Alert.alert("Delete Todo", "Are you sure?", [
+        { text: "Cancel" },
+        {
+          text: "Confirm",
+          style: "destructive",
+          onPress: () => {
+            const newTodos = { ...todos };
+            delete newTodos[key];
+            setTodos(newTodos);
+            saveTodos(newTodos);
+          },
         },
-      },
-    ]);
+      ]);
+    }
   };
   return (
     <View style={styles.container}>
@@ -78,7 +89,8 @@ export default function App() {
           <Text
             onPress={work}
             style={{
-              ...styles.btnText,
+              fontSize: 38,
+              fontWeight: "600",
               color: working ? "white" : theme.gray4,
             }}
           >
@@ -89,7 +101,8 @@ export default function App() {
           <Text
             onPress={play}
             style={{
-              ...styles.btnText,
+              fontSize: 38,
+              fontWeight: "600",
               color: !working ? "white" : theme.gray4,
             }}
           >
@@ -140,11 +153,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     // backgroundColor: "gold",
   },
-  btnText: {
-    color: "white",
-    fontSize: 38,
-    fontWeight: "600",
-  },
+  btnText: {},
   body: {
     flex: 3,
   },
